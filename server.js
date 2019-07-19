@@ -9,15 +9,28 @@ var app = express();
 
 app.use(logger("dev"));
 app.use(
-  bodyParser.urlencoded({
+    bodyParser.urlencoded({
     extended: false
   })
 );
 
+app.use(express.static(process.cwd() + "/public"));
+
+//Require set up handlebars
 var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
+//connecting to MongoDB
+//mongoose.connect("mongodb://localhost/articleScraper");
+mongoose.connect("mongodb://localhost/articleScraper");
+var db = mongoose.connection;
 
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function() {
+  console.log("Connected to Mongoose! BOOYA!");
+});
+
+//Create localhost port
 var port = process.env.Port || 3000;
 app.listen(port, function() {
     console.log("Listening on PORT" + port);
